@@ -16,7 +16,7 @@ We define "database" to mean this:
 Each key is the name of the .csv file without the extension.  Each value is
 the corresponding table as defined above.
 """
-
+import os
 import glob
 
 
@@ -46,3 +46,31 @@ def print_csv(table):
 # Write your read_table and read_database functions below.
 # Use glob.glob('*.csv') to return a list of csv filenames from
 #   the current directory.
+def read_database():
+    files = glob.glob('*.csv')
+    database = dict()
+    for file in files:
+        table = read_table(open(file))
+        table_name = os.path.splitext(file)[0]
+        database[table_name] = table
+    return database
+
+
+def read_table(table_file):
+    lines = table_file.readlines()
+    cols = lines[0].split(',')
+    table = dict()
+    for i in range(len(cols)):
+        cols[i] = cols[i].strip()
+        table[cols[i]] = []
+    for i in range(1, len(lines)):
+        row = lines[i].split(',')
+        for j in range(len(cols)):
+            table[cols[j]].append(row[j].strip())
+    table_file.close()
+    return table
+
+
+if __name__ == '__main__':
+    print(read_table(open('movies.csv')))
+    print(read_database())
